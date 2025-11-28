@@ -1,1 +1,0 @@
-import{j as s,c as e}from"./app-CH_0ZtnS.js";import{L as i}from"./auth-layout--XXbr_BD.js";function t({className:a,...r}){return s.jsx(i,{role:"status","aria-label":"Loading",className:e("size-4 animate-spin",a),...r})}export{t as S};
