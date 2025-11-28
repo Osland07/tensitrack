@@ -35,38 +35,44 @@ const mainNavItems: NavItem[] = [
         title: 'Manajemen Peran',
         href: AdminRoleController.index.url(),
         icon: Users,
+        permission: 'roles.view',
     },
     {
         title: 'Manajemen Izin',
         href: AdminPermissionController.index.url(),
         icon: Folder,
+        permission: 'permissions.view',
     },
     {
         title: 'Manajemen Pengguna',
         href: AdminUserController.index.url(),
-        icon: Users, // Using Users icon for User Management
+        icon: Users,
+        permission: 'users.view',
     },
     {
         title: 'Tingkat Risiko',
         href: AdminRiskLevelController.index.url(),
         icon: AlertTriangle,
+        permission: 'risk-levels.view',
     },
     {
         title: 'Faktor Risiko',
         href: AdminRiskFactorController.index.url(),
         icon: ListChecks,
+        permission: 'risk-factors.view',
     },
     {
         title: 'Rules', // New item
         href: AdminRuleController.index.url(),
         icon: Gavel, // Icon for rules
+        permission: 'rules.view',
     },
     {
         title: 'Riwayat Skrining',
         href: AdminScreeningHistoryController.index.url(),
         icon: History,
+        permission: 'screening-history.view',
     },
-
 ];
 
 const footerNavItems: NavItem[] = [];

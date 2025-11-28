@@ -13,7 +13,9 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo, LogoImage, LogoText } from "@/components/logo";
+import { Head, Link, usePage } from '@inertiajs/react';
 
 export default function Navbar({ canRegister = true }: { canRegister?: boolean; }) {
     const { auth } = usePage<SharedData>().props;

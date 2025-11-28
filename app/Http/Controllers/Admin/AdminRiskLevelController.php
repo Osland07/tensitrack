@@ -13,6 +13,15 @@ use Inertia\Response;
 
 class AdminRiskLevelController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:risk-levels.view')->only('index');
+        $this->middleware('can:risk-levels.create')->only(['create', 'store']);
+        $this->middleware('can:risk-levels.edit')->only(['edit', 'update']);
+        $this->middleware('can:risk-levels.delete')->only('destroy');
+        $this->middleware('can:risk-levels.print')->only('print');
+    }
+
     public function create(): Response
     {
         return Inertia::render('admin/RiskLevels/Create');

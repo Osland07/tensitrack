@@ -1,9 +1,9 @@
 import AdminRoleController from '@/actions/App/Http/Controllers/Admin/AdminRoleController';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout'; // Use AppLayout
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import {
     Table,
     TableBody,
@@ -49,6 +49,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function RolesIndex({ roles, filters }: RolesIndexProps) {
+    const { auth: { permissions } } = usePage<SharedData>().props;
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = (e: React.FormEvent) => {
@@ -58,6 +59,18 @@ export default function RolesIndex({ roles, filters }: RolesIndexProps) {
             replace: true,
         });
     };
+
+    const handleDelete = (role: Role) => {
+        if (confirm(`Apakah Anda yakin ingin menghapus peran "${role.name}"?`)) {
+            router.delete(AdminRoleController.destroy.url(role.id), {
+                preserveScroll: true,
+            });
+        }
+    };
+
+    const canCreate = permissions.includes('roles.create');
+    const canEdit = permissions.includes('roles.edit');
+    const canDelete = permissions.includes('roles.delete');
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -70,9 +83,11 @@ export default function RolesIndex({ roles, filters }: RolesIndexProps) {
 
                 <div className="flex justify-between items-center">
                     <div className="flex gap-2">
-                        <Button asChild className="btn-modern bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground">
-                            <Link href={AdminRoleController.create.url()}>Tambah Peran</Link>
-                        </Button>
+                        {canCreate && (
+                            <Button asChild className="btn-modern bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground">
+                                <Link href={AdminRoleController.create.url()}>Tambah Peran</Link>
+                            </Button>
+                        )}
                     </div>
                     <form onSubmit={handleSearch} className="flex gap-2">
                         <Input
@@ -108,10 +123,16 @@ export default function RolesIndex({ roles, filters }: RolesIndexProps) {
                                         <td className="p-3 text-center">{new Date(role.created_at).toLocaleDateString()}</td>
                                         <td className="p-3 text-center">
                                             <div className="flex items-center justify-center gap-2">
-                                                <Button asChild size="sm" className="btn-modern bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
-                                                    <Link href={AdminRoleController.edit.url(role.id)}>Edit</Link>
-                                                </Button>
-                                                {/* Delete functionality will be added here */}
+                                                {canEdit && (
+                                                    <Button asChild size="sm" className="btn-modern bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
+                                                        <Link href={AdminRoleController.edit.url(role.id)}>Edit</Link>
+                                                    </Button>
+                                                )}
+                                                {canDelete && (
+                                                    <Button variant="destructive" size="sm" onClick={() => handleDelete(role)}>
+                                                        Hapus
+                                                    </Button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

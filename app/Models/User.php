@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -57,14 +58,6 @@ class User extends Authenticatable
     }
 
     /**
-     * The roles that belong to the user.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    /**
      * Get the screening histories for the user.
      */
     public function screeningHistories(): HasMany
@@ -72,3 +65,5 @@ class User extends Authenticatable
         return $this->hasMany(ScreeningHistory::class);
     }
 }
+
+    

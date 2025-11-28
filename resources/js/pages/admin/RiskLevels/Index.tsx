@@ -1,5 +1,5 @@
 import AdminRiskLevelController from '@/actions/App/Http/Controllers/Admin/AdminRiskLevelController';
-import { router, Form, Head, Link, usePage, useForm } from '@inertiajs/react';
+import { router, Head, Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import {
     AlertDialog,
@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import React from 'react';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 
 // Define a basic Paginator type, adjust if a more specific one exists
 type Paginator<T> = {
@@ -36,11 +36,9 @@ type RiskLevel = {
     suggestion: string | null;
 };
 
-
-
 // Update props type to include paginated data and filters
 export default function RiskLevels({ riskLevels, filters }: { riskLevels: Paginator<RiskLevel>, filters: { search?: string } }) {
-    // Add local state for search input
+    const { auth: { permissions } } = usePage<SharedData>().props;
     const [search, setSearch] = React.useState(filters.search || '');
 
     // Function to handle search submission
@@ -49,8 +47,13 @@ export default function RiskLevels({ riskLevels, filters }: { riskLevels: Pagina
         AdminRiskLevelController.index.get({ query: { search } }); // Use Wayfinder for GET request with search query
     };
 
+    const canCreate = permissions.includes('risk-levels.create');
+    const canPrint = permissions.includes('risk-levels.print');
+    const canEdit = permissions.includes('risk-levels.edit');
+    const canDelete = permissions.includes('risk-levels.delete');
+
     return (
-        <AppLayout breadcrumbs={[{ title: 'Tingkat Risiko', href: AdminRiskLevelController.index.url() }]}>        
+        <AppLayout breadcrumbs={[{ title: 'Tingkat Risiko', href: AdminRiskLevelController.index.url() }]}>
             <Head title="Tingkat Risiko" />
 
             <div className="container-admin space-y-8">
@@ -60,16 +63,20 @@ export default function RiskLevels({ riskLevels, filters }: { riskLevels: Pagina
 
                 <div className="flex justify-between items-center">
                     <div className="flex gap-2">
-                        <Button asChild className="btn-modern bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground">
-                            <Link href={AdminRiskLevelController.create.url()}>Tambah</Link>
-                        </Button>
-                        <Button
-                            type="button"
-                            className="btn-modern bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:text-white"
-                            onClick={() => window.open(AdminRiskLevelController.print.url(), '_blank')}
-                        >
-                            Cetak
-                        </Button>
+                        {canCreate && (
+                            <Button asChild className="btn-modern bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground">
+                                <Link href={AdminRiskLevelController.create.url()}>Tambah</Link>
+                            </Button>
+                        )}
+                        {canPrint && (
+                            <Button
+                                type="button"
+                                className="btn-modern bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:text-white"
+                                onClick={() => window.open(AdminRiskLevelController.print.url(), '_blank')}
+                            >
+                                Cetak
+                            </Button>
+                        )}
                     </div>
                 </div>
 
@@ -99,7 +106,6 @@ export default function RiskLevels({ riskLevels, filters }: { riskLevels: Pagina
                                     <th className="p-3 text-center">Nama</th>
                                     <th className="p-3 text-center">Keterangan</th>
                                     <th className="p-3 text-center">Saran</th>
-
                                     <th className="p-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -112,36 +118,40 @@ export default function RiskLevels({ riskLevels, filters }: { riskLevels: Pagina
                                         <td className="p-3 text-center">{riskLevel.suggestion}</td>
                                         <td className="p-3 text-center">
                                             <div className="flex items-center justify-center gap-2">
-                                                <Button asChild size="sm" className="btn-modern bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
-                                                    <Link href={AdminRiskLevelController.edit.url(riskLevel.id)}>Edit</Link>
-                                                </Button>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button size="sm" variant="destructive" className="btn-modern">
-                                                            Hapus
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Anda yakin?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Data yang dihapus tidak dapat dikembalikan!
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                            <AlertDialogAction
-                                                                onClick={() => {
-                                                                    router.delete(AdminRiskLevelController.destroy.url(riskLevel.id), {
-                                                                        preserveScroll: true,
-                                                                    });
-                                                                }}
-                                                            >
-                                                                Ya, hapus!
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
+                                                {canEdit && (
+                                                    <Button asChild size="sm" className="btn-modern bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
+                                                        <Link href={AdminRiskLevelController.edit.url(riskLevel.id)}>Edit</Link>
+                                                    </Button>
+                                                )}
+                                                {canDelete && (
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button size="sm" variant="destructive" className="btn-modern">
+                                                                Hapus
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Anda yakin?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Data yang dihapus tidak dapat dikembalikan!
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() => {
+                                                                        router.delete(AdminRiskLevelController.destroy.url(riskLevel.id), {
+                                                                            preserveScroll: true,
+                                                                        });
+                                                                    }}
+                                                                >
+                                                                    Ya, hapus!
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

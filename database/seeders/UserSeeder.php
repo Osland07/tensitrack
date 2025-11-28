@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Role; // Import the Role model
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create a regular user
         $user = User::firstOrCreate(
             ['email' => 'user@example.com'],
             [
@@ -21,7 +22,9 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        $user->assignRole('user');
 
+        // Create an admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
@@ -30,16 +33,17 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        $admin->assignRole('admin');
 
-        // Assign roles
-        $userRole = Role::where('name', 'user')->first();
-        $adminRole = Role::where('name', 'admin')->first();
-
-        if ($userRole) {
-            $user->roles()->syncWithoutDetaching($userRole->id);
-        }
-        if ($adminRole) {
-            $admin->roles()->syncWithoutDetaching($adminRole->id);
-        }
+        // Create a superadmin user
+        $superadmin = User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
+        $superadmin->assignRole('superadmin');
     }
 }

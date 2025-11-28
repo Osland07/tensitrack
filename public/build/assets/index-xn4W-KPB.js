@@ -1,1 +1,0 @@
-import{r as o,t as s,n as u}from"./app-BYAEZ_EC.js";var n=s[" useId ".trim().toString()]||(()=>{}),c=0;function i(t){const[r,a]=o.useState(n());return u(()=>{a(e=>e??String(c++))},[t]),t||(r?`radix-${r}`:"")}export{i as u};
