@@ -1,0 +1,1 @@
+import{j as a,H as s}from"./app-DEelWaAR.js";/* empty css            */function r(){return a.jsxs(a.Fragment,{children:[a.jsx(s,{title:"Admin Dashboard"}),a.jsxs("div",{className:"p-4",children:[a.jsx("h1",{className:"text-2xl",children:"Admin Dashboard"}),a.jsx("p",{children:"Selamat datang di halaman dashboard admin."})]})]})}export{r as default};
